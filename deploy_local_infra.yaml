@@ -1,0 +1,44 @@
+
+---
+apiVersion: "apps/v1"
+kind: "Deployment"
+metadata:
+  name: "django"
+  namespace: "default"
+  labels:
+    app: "django"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "django"
+  template:
+    metadata:
+      labels:
+        app: "django"
+    spec:
+      containers:
+      - name: "django"
+        image: "malamcsc/kubernetes_project:tagversion"
+        envFrom:
+          - configMapRef:
+              name : db-connection
+
+        
+---
+apiVersion: "v1"
+kind: "Service"
+metadata:
+  name: "flask-service"
+  namespace: "default"
+  labels:
+    app: "flask"
+spec:
+  type: "NodePort"
+  ports:
+  - protocol: "TCP"
+    port: 80
+    targetPort: 5000
+    nodePort: 30008
+  selector:
+    app: "flask"  
